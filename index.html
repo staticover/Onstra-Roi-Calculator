@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Onstra ROI Calculator</title>
-<meta name="description" content="Calculate how many hours your business is spending on repetitive tasks and see the potential ROI of automations. Onstra ROI Calculator.">
+<meta name="description" content="Calculate how much time and money your business could save with automations. Onstra ROI Calculator.">
 
 <style>
 :root {
@@ -13,141 +13,30 @@
   --gray: #e5e5e5;
 }
 
-* {
-  box-sizing: border-box;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-body {
-  margin: 0;
-  background: var(--white);
-  color: var(--black);
-  line-height: 1.6;
-}
-
-header {
-  border-bottom: 1px solid var(--gray);
-}
-
-.container {
-  max-width: 880px;
-  margin: auto;
-  padding: 40px 20px;
-}
-
-.brand {
-  font-weight: 800;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  font-size: 22px;
-}
-
-.hero {
-  padding: 60px 0 40px;
-}
-
-.hero h1 {
-  font-size: 36px;
-  margin-bottom: 10px;
-}
-
-.hero p {
-  font-size: 16px;
-  max-width: 520px;
-}
-
-.calculator {
-  border: 1px solid var(--gray);
-  padding: 40px;
-  margin-top: 30px;
-  border-radius: 8px;
-}
-
-.question {
-  margin-bottom: 24px;
-}
-
-label {
-  font-weight: 600;
-  display: block;
-  margin-bottom: 6px;
-}
-
-input {
-  width: 100%;
-  padding: 14px;
-  border: 1px solid var(--black);
-  background: var(--white);
-  font-size: 15px;
-  border-radius: 4px;
-}
-
-button {
-  width: 100%;
-  padding: 16px;
-  background: var(--black);
-  color: var(--white);
-  font-size: 15px;
-  font-weight: 700;
-  border: none;
-  cursor: pointer;
-  letter-spacing: 0.5px;
-  border-radius: 4px;
-}
-
-button:hover {
-  opacity: 0.9;
-}
-
-.result {
-  display: none;
-  margin-top: 40px;
-  border-top: 1px solid var(--gray);
-  padding-top: 30px;
-}
-
-.stat {
-  font-size: 28px;
-  font-weight: 800;
-  margin: 10px 0;
-}
-
-.note {
-  font-size: 14px;
-  max-width: 520px;
-}
-
-.cta {
-  margin-top: 30px;
-  padding: 20px;
-  border: 1px solid var(--black);
-}
-
-.cta strong {
-  display: block;
-  margin-bottom: 6px;
-}
-
-footer {
-  border-top: 1px solid var(--gray);
-  margin-top: 60px;
-  padding: 30px 20px;
-  font-size: 13px;
-  color: #555;
-  text-align: center;
-}
-
-a {
-  color: var(--black);
-  text-decoration: underline;
-}
-
-a:hover {
-  opacity: 0.8;
-}
+* { box-sizing: border-box; font-family: Arial, Helvetica, sans-serif; }
+body { margin:0; background: var(--white); color: var(--black); line-height:1.6; }
+header { border-bottom:1px solid var(--gray); }
+.container { max-width:880px; margin:auto; padding:40px 20px; }
+.brand { font-weight:800; letter-spacing:1px; text-transform:uppercase; font-size:22px; }
+.hero { padding:60px 0 40px; }
+.hero h1 { font-size:36px; margin-bottom:10px; }
+.hero p { font-size:16px; max-width:520px; }
+.calculator { border:1px solid var(--gray); padding:40px; margin-top:30px; border-radius:8px; }
+.question { margin-bottom:24px; }
+label { font-weight:600; display:block; margin-bottom:6px; }
+input { width:100%; padding:14px; border:1px solid var(--black); background: var(--white); font-size:15px; border-radius:4px; }
+button { width:100%; padding:16px; background: var(--black); color: var(--white); font-size:15px; font-weight:700; border:none; cursor:pointer; letter-spacing:0.5px; border-radius:4px; }
+button:hover { opacity:0.9; }
+.result { display:none; margin-top:40px; border-top:1px solid var(--gray); padding-top:30px; }
+.stat { font-size:28px; font-weight:800; margin:10px 0; }
+.note { font-size:14px; max-width:520px; margin-bottom:12px; }
+.microcopy { font-size:14px; max-width:520px; color:#333; margin-bottom:24px; }
+form { margin-top:30px; }
+footer { border-top:1px solid var(--gray); margin-top:60px; padding:30px 20px; font-size:13px; color:#555; text-align:center; }
+a { color: var(--black); text-decoration:underline; }
+a:hover { opacity:0.8; }
 </style>
 </head>
-
 <body>
 
 <header>
@@ -159,7 +48,7 @@ a:hover {
 <section class="hero">
   <div class="container">
     <h1>Onstra ROI Calculator</h1>
-    <p>Quickly see how many hours your business is spending on repetitive tasks and what automating them could save.</p>
+    <p>Quickly see how many hours your business is spending on repetitive tasks and how automations could save you time and money.</p>
 
     <div class="calculator">
 
@@ -198,10 +87,19 @@ a:hover {
           Potential revenue impact: $<span id="money"></span> / month
         </div>
 
-        <div class="cta">
-          <strong>Automations can handle:</strong>
-          Lead follow-ups, booking confirmations, reminders, missed-call texts, and review requests.
-        </div>
+        <p class="microcopy" id="microcopy1" style="display:none;">
+          Imagine what you could do with <strong><span id="hours2"></span> extra hours</strong> this month — more time to grow your business or focus on what matters most.
+        </p>
+
+        <p class="microcopy" id="microcopy2" style="display:none;">
+          Automations can handle lead follow-ups, bookings, reminders, and review requests, freeing up your time and increasing efficiency.
+        </p>
+
+        <form action="https://formspree.io/f/xwvqljep" method="POST" onsubmit="return redirectAfterSubmit(this)">
+          <input type="text" name="name" placeholder="Your Name" required>
+          <input type="email" name="email" placeholder="Your Email" required>
+          <button type="submit">Get Free Strategy</button>
+        </form>
       </div>
 
     </div>
@@ -239,7 +137,20 @@ function calculate() {
     document.getElementById("moneyRow").style.display = "none";
   }
 
+  // Show microcopy
+  document.getElementById("hours2").innerText = totalHoursPerMonth;
+  document.getElementById("microcopy1").style.display = "block";
+  document.getElementById("microcopy2").style.display = "block";
+
   document.getElementById("result").style.display = "block";
+}
+
+// Redirect after Formspree submission
+function redirectAfterSubmit(form) {
+  setTimeout(function() {
+    window.location.href = "https://www.onstra.world";
+  }, 100); // slight delay to allow submission
+  return true;
 }
 </script>
 
