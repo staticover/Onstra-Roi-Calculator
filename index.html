@@ -20,28 +20,34 @@ gtag('config', 'G-XXXXXXXXXX'); // <-- replace with your GA4 ID
   --black: #0a0a0a;
   --white: #ffffff;
   --gray: #e5e5e5;
+  --accent: #000000;
 }
 
-* { box-sizing: border-box; font-family: Arial, Helvetica, sans-serif; }
+* { box-sizing: border-box; font-family: Arial, Helvetica, sans-serif; transition: all 0.3s ease; }
 body { margin:0; background: var(--white); color: var(--black); line-height:1.6; }
 header { border-bottom:1px solid var(--gray); }
 .container { max-width:880px; margin:auto; padding:40px 20px; }
 .brand { font-weight:800; letter-spacing:1px; text-transform:uppercase; font-size:22px; }
-.hero { padding:60px 0 40px; }
+.hero { padding:60px 0 40px; text-align:center; }
 .hero h1 { font-size:36px; margin-bottom:10px; }
-.hero p { font-size:16px; max-width:520px; }
-.calculator { border:1px solid var(--gray); padding:40px; margin-top:30px; border-radius:8px; }
-.question { margin-bottom:24px; }
+.hero p { font-size:16px; max-width:520px; margin:auto; }
+.calculator { border:1px solid var(--gray); padding:40px; margin-top:30px; border-radius:8px; box-shadow:0 4px 15px rgba(0,0,0,0.05);}
+.question { margin-bottom:24px; opacity:1; transform:translateY(0); transition: all 0.5s ease; }
 label { font-weight:600; display:block; margin-bottom:6px; }
-select { width:100%; padding:14px; border:1px solid var(--black); background: var(--white); font-size:15px; border-radius:4px; }
+select { width:100%; padding:14px; border:1px solid var(--black); background: var(--white); font-size:15px; border-radius:4px; cursor:pointer;}
+select:hover { border-color: var(--accent); }
 button { width:100%; padding:16px; background: var(--black); color: var(--white); font-size:15px; font-weight:700; border:none; cursor:pointer; letter-spacing:0.5px; border-radius:4px; }
 button:hover { opacity:0.9; }
-.result { display:none; margin-top:40px; border-top:1px solid var(--gray); padding-top:30px; }
+.result { display:none; margin-top:40px; border-top:1px solid var(--gray); padding-top:30px; animation: fadeIn 1s ease forwards;}
+@keyframes fadeIn { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
 .stat { font-size:28px; font-weight:800; margin:10px 0; }
 .badge { display:inline-block; padding:4px 12px; background: var(--black); color: var(--white); font-size:13px; font-weight:700; border-radius:4px; margin-right:8px; margin-bottom:8px; }
 .note { font-size:14px; max-width:520px; margin-bottom:12px; }
 .microcopy { font-size:14px; max-width:520px; color:#333; margin-bottom:24px; }
-form { margin-top:30px; }
+form { margin-top:30px; display:flex; flex-direction:column; gap:12px; }
+input { padding:12px; border-radius:4px; border:1px solid var(--black); font-size:15px; }
+input:focus { outline:none; border-color:var(--accent); }
+.thankyou { display:none; font-weight:600; color: var(--black); margin-top:20px; }
 footer { border-top:1px solid var(--gray); margin-top:60px; padding:30px 20px; font-size:13px; color:#555; text-align:center; }
 a { color: var(--black); text-decoration:underline; }
 a:hover { opacity:0.8; }
@@ -127,11 +133,12 @@ a:hover { opacity:0.8; }
 
         <p class="microcopy" id="microcopy1" style="display:none;">This estimate is based on real research showing small businesses save 20–40% of repetitive task time through automations. Want to see where we can save you time? Get a free strategy below.</p>
 
-        <form action="https://formspree.io/f/xwvqljep" method="POST" onsubmit="return redirectAfterSubmit(this)">
+        <form id="roiForm" action="https://formspree.io/f/xwvqljep" method="POST" onsubmit="return redirectAfterSubmit(event)">
           <input type="text" name="name" placeholder="Your Name" required>
           <input type="email" name="email" placeholder="Your Email" required>
           <button type="submit">Get Free Strategy</button>
         </form>
+        <p class="thankyou" id="thankyou">Thank you! Someone will be in contact shortly.</p>
       </div>
 
     </div>
@@ -172,11 +179,10 @@ function calculate() {
 
   // Realistic savings: 20–40%
   const lowPercent = 0.2, highPercent = 0.4;
-  const savedLow = totalHours * lowPercent * 4;
   const savedHigh = totalHours * highPercent * 4;
   const savedDaysHigh = savedHigh / 8;
 
-  animateValue("hours", 0, Math.round(savedHigh));
+  animateValue("hours", 0, Math.round(savedHigh), 1000);
   document.getElementById("days").innerText = Math.round(savedDaysHigh);
 
   if (revenue > 0) {
@@ -191,18 +197,31 @@ function calculate() {
   }
 
   document.getElementById("result").style.display = "block";
+  document.getElementById("microcopy1").style.display = "block";
 
   // GA4 tracking
   gtag('event', 'calculate_clicked', { 'event_category': 'ROI Calculator', 'value': Math.round(savedHigh) });
 }
 
 // Redirect after Formspree submission
-function redirectAfterSubmit(form) {
-  setTimeout(function() {
-    window.location.href = "https://www.onstra.world";
-  }, 100);
-  gtag('event', 'form_submitted', { 'event_category': 'ROI Calculator' });
-  return true;
+function redirectAfterSubmit(e) {
+  e.preventDefault();
+  const form = e.target;
+  const formData = new FormData(form);
+
+  fetch(form.action, {
+    method: form.method,
+    body: formData,
+    headers: { 'Accept': 'application/json' }
+  }).then(response => {
+    form.style.display = 'none';
+    document.getElementById('thankyou').style.display = 'block';
+    gtag('event', 'form_submitted', { 'event_category': 'ROI Calculator' });
+  }).catch(error => {
+    alert("Oops! There was a problem submitting your form.");
+  });
+
+  return false;
 }
 </script>
 
