@@ -6,6 +6,15 @@
 <title>Onstra ROI Calculator</title>
 <meta name="description" content="Calculate how much time and money your business could save with automations. Onstra ROI Calculator.">
 
+<!-- Google Analytics / GA4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-XXXXXXXXXX'); // <-- replace with your GA4 ID
+</script>
+
 <style>
 :root {
   --black: #0a0a0a;
@@ -29,6 +38,7 @@ button { width:100%; padding:16px; background: var(--black); color: var(--white)
 button:hover { opacity:0.9; }
 .result { display:none; margin-top:40px; border-top:1px solid var(--gray); padding-top:30px; }
 .stat { font-size:28px; font-weight:800; margin:10px 0; }
+.badge { display:inline-block; padding:4px 12px; background: var(--black); color: var(--white); font-size:13px; font-weight:700; border-radius:4px; margin-right:8px; margin-bottom:8px; }
 .note { font-size:14px; max-width:520px; margin-bottom:12px; }
 .microcopy { font-size:14px; max-width:520px; color:#333; margin-bottom:24px; }
 form { margin-top:30px; }
@@ -48,52 +58,43 @@ a:hover { opacity:0.8; }
 <section class="hero">
   <div class="container">
     <h1>Onstra ROI Calculator</h1>
-    <p>Quickly see how many hours your business is spending on repetitive tasks and how automations could save you time and money.</p>
+    <p>Quickly see how much time your business spends on repetitive tasks and how much automations could save you.</p>
 
     <div class="calculator">
 
       <div class="question">
-        <label>Hours spent responding to leads per week</label>
-        <input type="number" id="response" placeholder="Example: 5">
+        <label>Responding to leads per week (hours or minutes, e.g., 2h or 120m)</label>
+        <input type="text" id="response" placeholder="Example: 2h or 120m">
       </div>
 
       <div class="question">
-        <label>Hours spent following up per week</label>
-        <input type="number" id="followup" placeholder="Example: 3">
+        <label>Following up per week (hours or minutes, e.g., 1h or 60m)</label>
+        <input type="text" id="followup" placeholder="Example: 1h or 60m">
       </div>
 
       <div class="question">
-        <label>Hours spent on booking & reminders per week</label>
-        <input type="number" id="booking" placeholder="Example: 2">
+        <label>Booking & reminders per week (hours or minutes, e.g., 30m)</label>
+        <input type="text" id="booking" placeholder="Example: 30m">
       </div>
 
       <div class="question">
-        <label>Average revenue per week from tasks above ($, optional)</label>
+        <label>Average revenue per week from these tasks ($, optional)</label>
         <input type="number" id="revenue" placeholder="Example: 2000">
       </div>
 
       <button onclick="calculate()">See My ROI</button>
 
       <div class="result" id="result">
-        <div class="stat">
-          <span id="hours"></span> hours / month
-        </div>
+        <div class="badge">Time Saved</div>
+        <div class="stat" id="hours">0</div> hours/month
+        <p class="note">Equivalent to <strong><span id="days">0</span> full workdays</strong> each month.</p>
 
-        <p class="note">
-          Equivalent to <strong><span id="days"></span> full workdays</strong> each month.
-        </p>
+        <div class="badge" id="moneyBadge" style="display:none;">Revenue Potential</div>
+        <div class="stat" id="moneyRow" style="display:none;">$<span id="money">0</span>/month</div>
 
-        <div class="stat" id="moneyRow" style="display:none;">
-          Potential revenue impact: $<span id="money"></span> / month
-        </div>
-
-        <p class="microcopy" id="microcopy1" style="display:none;">
-          Imagine what you could do with <strong><span id="hours2"></span> extra hours</strong> this month — more time to grow your business or focus on what matters most.
-        </p>
-
-        <p class="microcopy" id="microcopy2" style="display:none;">
-          Automations can handle lead follow-ups, bookings, reminders, and review requests, freeing up your time and increasing efficiency.
-        </p>
+        <p class="microcopy" id="microcopy1" style="display:none;"></p>
+        <p class="microcopy" id="microcopy2" style="display:none;">Automations can handle lead follow-ups, bookings, reminders, and review requests, freeing up your time and increasing efficiency.</p>
+        <p class="microcopy" id="microcopy3" style="display:none;">This estimate is based on real research showing small businesses save 20–40% of repetitive task time through automations.</p>
 
         <form action="https://formspree.io/f/xwvqljep" method="POST" onsubmit="return redirectAfterSubmit(this)">
           <input type="text" name="name" placeholder="Your Name" required>
@@ -111,45 +112,90 @@ a:hover { opacity:0.8; }
 </footer>
 
 <script>
+// Parse input (hours or minutes)
+function parseTime(input) {
+  if (!input) return 0;
+  input = input.trim().toLowerCase();
+  if (input.endsWith('h')) return parseFloat(input) || 0;
+  if (input.endsWith('m')) return (parseFloat(input) || 0)/60;
+  return parseFloat(input) || 0; // assume hours
+}
+
+// Animate number from 0 to target
+function animateValue(id, start, end, duration) {
+  let range = end - start;
+  let current = start;
+  const increment = range / (duration / 30);
+  const obj = document.getElementById(id);
+  const timer = setInterval(function() {
+    current += increment;
+    if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+      current = end;
+      clearInterval(timer);
+    }
+    obj.innerText = Math.round(current);
+  }, 30);
+}
+
+// Calculate ROI
 function calculate() {
-  const response = Number(document.getElementById("response").value);
-  const followup = Number(document.getElementById("followup").value);
-  const booking = Number(document.getElementById("booking").value);
+  const response = parseTime(document.getElementById("response").value);
+  const followup = parseTime(document.getElementById("followup").value);
+  const booking = parseTime(document.getElementById("booking").value);
   const revenue = Number(document.getElementById("revenue").value);
 
-  if (response < 0 || followup < 0 || booking < 0) {
-    alert("Please enter valid numbers for all fields");
+  const totalHoursPerWeek = response + followup + booking;
+  if (totalHoursPerWeek <= 0) {
+    alert("Please enter valid time for at least one task");
     return;
   }
 
-  const totalHoursPerWeek = response + followup + booking;
-  const totalHoursPerMonth = (totalHoursPerWeek * 4).toFixed(1);
-  const totalDaysPerMonth = (totalHoursPerMonth / 8).toFixed(1);
+  // Realistic range: 20–40%
+  const lowPercent = 0.2, highPercent = 0.4;
+  const savedLow = totalHoursPerWeek * lowPercent * 4; // per month
+  const savedHigh = totalHoursPerWeek * highPercent * 4; // per month
+  const savedDaysLow = savedLow / 8;
+  const savedDaysHigh = savedHigh / 8;
 
-  document.getElementById("hours").innerText = totalHoursPerMonth;
-  document.getElementById("days").innerText = totalDaysPerMonth;
+  // Animate hours
+  animateValue("hours", 0, Math.round(savedHigh));
+  document.getElementById("days").innerText = Math.round(savedDaysHigh);
 
+  // Conditional microcopy
+  const micro1 = document.getElementById("microcopy1");
+  if (totalHoursPerWeek < 5) {
+    micro1.innerText = `Even small automations can free up ${Math.round(savedLow)}–${Math.round(savedHigh)} hours per month.`;
+  } else {
+    micro1.innerText = `Imagine reclaiming ${Math.round(savedLow)}–${Math.round(savedHigh)} hours per month with automations.`;
+  }
+  micro1.style.display = "block";
+  document.getElementById("microcopy2").style.display = "block";
+  document.getElementById("microcopy3").style.display = "block";
+
+  // Revenue impact
   if (revenue && revenue > 0) {
-    const potentialRevenue = ((revenue / totalHoursPerWeek) * totalHoursPerMonth).toFixed(0);
-    document.getElementById("money").innerText = potentialRevenue;
+    const potentialLow = (revenue * lowPercent * 4).toFixed(0);
+    const potentialHigh = (revenue * highPercent * 4).toFixed(0);
+    document.getElementById("money").innerText = `${potentialLow}–${potentialHigh}`;
     document.getElementById("moneyRow").style.display = "block";
+    document.getElementById("moneyBadge").style.display = "inline-block";
   } else {
     document.getElementById("moneyRow").style.display = "none";
+    document.getElementById("moneyBadge").style.display = "none";
   }
 
-  // Show microcopy
-  document.getElementById("hours2").innerText = totalHoursPerMonth;
-  document.getElementById("microcopy1").style.display = "block";
-  document.getElementById("microcopy2").style.display = "block";
-
   document.getElementById("result").style.display = "block";
+
+  // GA4 tracking
+  gtag('event', 'calculate_clicked', { 'event_category': 'ROI Calculator', 'value': Math.round(savedHigh) });
 }
 
 // Redirect after Formspree submission
 function redirectAfterSubmit(form) {
   setTimeout(function() {
     window.location.href = "https://www.onstra.world";
-  }, 100); // slight delay to allow submission
+  }, 100);
+  gtag('event', 'form_submitted', { 'event_category': 'ROI Calculator' });
   return true;
 }
 </script>
