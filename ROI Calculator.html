@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Onstra ROI Calculator</title>
+<meta name="description" content="See how much time and money your business could save with automations. Onstra ROI Calculator – simple, fast, and actionable.">
+
+<style>
+:root {
+  --black: #0a0a0a;
+  --white: #ffffff;
+  --gray: #e5e5e5;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--white);
+  color: var(--black);
+  line-height: 1.6;
+}
+
+header {
+  border-bottom: 1px solid var(--gray);
+}
+
+.container {
+  max-width: 880px;
+  margin: auto;
+  padding: 40px 20px;
+}
+
+.brand {
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-size: 22px;
+}
+
+.hero {
+  padding: 60px 0 40px;
+}
+
+.hero h1 {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.hero p {
+  font-size: 16px;
+  max-width: 520px;
+}
+
+.calculator {
+  border: 1px solid var(--gray);
+  padding: 40px;
+  margin-top: 30px;
+  border-radius: 8px;
+}
+
+.question {
+  margin-bottom: 24px;
+}
+
+label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 6px;
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid var(--black);
+  background: var(--white);
+  font-size: 15px;
+  border-radius: 4px;
+}
+
+button {
+  width: 100%;
+  padding: 16px;
+  background: var(--black);
+  color: var(--white);
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  border-radius: 4px;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.result {
+  display: none;
+  margin-top: 40px;
+  border-top: 1px solid var(--gray);
+  padding-top: 30px;
+}
+
+.stat {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 10px 0;
+}
+
+.note {
+  font-size: 14px;
+  max-width: 520px;
+}
+
+.cta {
+  margin-top: 30px;
+  padding: 20px;
+  border: 1px solid var(--black);
+}
+
+.cta strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+footer {
+  border-top: 1px solid var(--gray);
+  margin-top: 60px;
+  padding: 30px 20px;
+  font-size: 13px;
+  color: #555;
+  text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="container">
+    <div class="brand">ONSTRA</div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <h1>Onstra ROI Calculator</h1>
+    <p>Estimate how much time and money your business could save each month with automations.</p>
+
+    <div class="calculator">
+
+      <div class="question">
+        <label>New leads per week</label>
+        <input type="number" id="leads" placeholder="Example: 15">
+      </div>
+
+      <div class="question">
+        <label>Minutes spent responding to each lead</label>
+        <input type="number" id="response" placeholder="Example: 5">
+      </div>
+
+      <div class="question">
+        <label>Minutes spent following up per lead</label>
+        <input type="number" id="followup" placeholder="Example: 10">
+      </div>
+
+      <div class="question">
+        <label>Minutes spent on booking & reminders per client</label>
+        <input type="number" id="booking" placeholder="Example: 5">
+      </div>
+
+      <div class="question">
+        <label>Average revenue per client ($)</label>
+        <input type="number" id="revenue" placeholder="Example: 200">
+      </div>
+
+      <button onclick="calculate()">Calculate ROI</button>
+
+      <div class="result" id="result">
+        <div class="stat">
+          <span id="hours"></span> hours / month
+        </div>
+
+        <p class="note">
+          Equivalent to <strong><span id="days"></span> full workdays</strong> every month.
+        </p>
+
+        <div class="stat">
+          Potential revenue impact: $<span id="money"></span> / month
+        </div>
+
+        <div class="cta">
+          <strong>Automations can handle:</strong>
+          Lead follow-ups, booking confirmations, reminders, missed-call texts, and review requests.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  Built by Onstra • www.onstra.world
+</footer>
+
+<script>
+function calculate() {
+  const leads = Number(document.getElementById("leads").value);
+  const response = Number(document.getElementById("response").value);
+  const followup = Number(document.getElementById("followup").value);
+  const booking = Number(document.getElementById("booking").value);
+  const revenue = Number(document.getElementById("revenue").value);
+
+  if (!leads || !response || !followup || !booking || !revenue) {
+    alert("Complete all fields");
+    return;
+  }
+
+  const minutesPerWeek = leads * (response + followup + booking);
+  const minutesPerMonth = minutesPerWeek * 4;
+  const hours = (minutesPerMonth / 60).toFixed(1);
+  const days = (hours / 8).toFixed(1);
+  const potentialRevenue = ((minutesPerMonth / 60 / 160) * revenue * leads * 4).toFixed(0);
+
+  document.getElementById("hours").innerText = hours;
+  document.getElementById("days").innerText = days;
+  document.getElementById("money").innerText = potentialRevenue;
+  document.getElementById("result").style.display = "block";
+}
+</script>
+
+</body>
+</html>
