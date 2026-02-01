@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Onstra ROI Calculator</title>
-<meta name="description" content="Calculate how much time and money your business could save with automations. Onstra ROI Calculator.">
+<meta name="description" content="See how much time and money your business could save with automations. Onstra ROI Calculator.">
 
 <!-- Google Analytics / GA4 -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
@@ -33,7 +33,7 @@ header { border-bottom:1px solid var(--gray); }
 .calculator { border:1px solid var(--gray); padding:40px; margin-top:30px; border-radius:8px; }
 .question { margin-bottom:24px; }
 label { font-weight:600; display:block; margin-bottom:6px; }
-input { width:100%; padding:14px; border:1px solid var(--black); background: var(--white); font-size:15px; border-radius:4px; }
+select { width:100%; padding:14px; border:1px solid var(--black); background: var(--white); font-size:15px; border-radius:4px; }
 button { width:100%; padding:16px; background: var(--black); color: var(--white); font-size:15px; font-weight:700; border:none; cursor:pointer; letter-spacing:0.5px; border-radius:4px; }
 button:hover { opacity:0.9; }
 .result { display:none; margin-top:40px; border-top:1px solid var(--gray); padding-top:30px; }
@@ -58,28 +58,61 @@ a:hover { opacity:0.8; }
 <section class="hero">
   <div class="container">
     <h1>Onstra ROI Calculator</h1>
-    <p>Quickly see how much time your business spends on repetitive tasks and how much automations could save you.</p>
+    <p>See how much time your business spends on repetitive tasks and discover how much automations could save you.</p>
 
     <div class="calculator">
 
+      <!-- Dropdown Fields -->
       <div class="question">
-        <label>Responding to leads per week (hours or minutes, e.g., 2h or 120m)</label>
-        <input type="text" id="response" placeholder="Example: 2h or 120m">
+        <label>Responding to leads per week</label>
+        <select id="response">
+          <option value="1">1 hr</option>
+          <option value="2">2 hrs</option>
+          <option value="3">3 hrs</option>
+          <option value="4">4 hrs</option>
+          <option value="5">5 hrs</option>
+          <option value="6">6 hrs</option>
+          <option value="7">7 hrs</option>
+          <option value="8">8 hrs</option>
+          <option value="9">9 hrs</option>
+          <option value="10">10+ hrs</option>
+        </select>
       </div>
 
       <div class="question">
-        <label>Following up per week (hours or minutes, e.g., 1h or 60m)</label>
-        <input type="text" id="followup" placeholder="Example: 1h or 60m">
+        <label>Following up per week</label>
+        <select id="followup">
+          <option value="0.5">30 min</option>
+          <option value="1">1 hr</option>
+          <option value="2">2 hrs</option>
+          <option value="3">3 hrs</option>
+          <option value="4">4 hrs</option>
+          <option value="5">5+ hrs</option>
+        </select>
       </div>
 
       <div class="question">
-        <label>Booking & reminders per week (hours or minutes, e.g., 30m)</label>
-        <input type="text" id="booking" placeholder="Example: 30m">
+        <label>Booking & reminders per week</label>
+        <select id="booking">
+          <option value="0.25">15 min</option>
+          <option value="0.5">30 min</option>
+          <option value="1">1 hr</option>
+          <option value="1.5">1.5 hrs</option>
+          <option value="2">2+ hrs</option>
+        </select>
       </div>
 
       <div class="question">
-        <label>Average revenue per week from these tasks ($, optional)</label>
-        <input type="number" id="revenue" placeholder="Example: 2000">
+        <label>Revenue impacted by these tasks per week ($)</label>
+        <select id="revenue">
+          <option value="0">Not sure</option>
+          <option value="500">$500</option>
+          <option value="1000">$1,000</option>
+          <option value="2000">$2,000</option>
+          <option value="3000">$3,000</option>
+          <option value="4000">$4,000</option>
+          <option value="5000+">$5,000+</option>
+        </select>
       </div>
 
       <button onclick="calculate()">See My ROI</button>
@@ -92,9 +125,7 @@ a:hover { opacity:0.8; }
         <div class="badge" id="moneyBadge" style="display:none;">Revenue Potential</div>
         <div class="stat" id="moneyRow" style="display:none;">$<span id="money">0</span>/month</div>
 
-        <p class="microcopy" id="microcopy1" style="display:none;"></p>
-        <p class="microcopy" id="microcopy2" style="display:none;">Automations can handle lead follow-ups, bookings, reminders, and review requests, freeing up your time and increasing efficiency.</p>
-        <p class="microcopy" id="microcopy3" style="display:none;">This estimate is based on real research showing small businesses save 20–40% of repetitive task time through automations.</p>
+        <p class="microcopy" id="microcopy1" style="display:none;">This estimate is based on real research showing small businesses save 20–40% of repetitive task time through automations. Want to see where we can save you time? Get a free strategy below.</p>
 
         <form action="https://formspree.io/f/xwvqljep" method="POST" onsubmit="return redirectAfterSubmit(this)">
           <input type="text" name="name" placeholder="Your Name" required>
@@ -112,16 +143,7 @@ a:hover { opacity:0.8; }
 </footer>
 
 <script>
-// Parse input (hours or minutes)
-function parseTime(input) {
-  if (!input) return 0;
-  input = input.trim().toLowerCase();
-  if (input.endsWith('h')) return parseFloat(input) || 0;
-  if (input.endsWith('m')) return (parseFloat(input) || 0)/60;
-  return parseFloat(input) || 0; // assume hours
-}
-
-// Animate number from 0 to target
+// Animate numbers
 function animateValue(id, start, end, duration) {
   let range = end - start;
   let current = start;
@@ -137,45 +159,29 @@ function animateValue(id, start, end, duration) {
   }, 30);
 }
 
-// Calculate ROI
+// Main calculation
 function calculate() {
-  const response = parseTime(document.getElementById("response").value);
-  const followup = parseTime(document.getElementById("followup").value);
-  const booking = parseTime(document.getElementById("booking").value);
-  const revenue = Number(document.getElementById("revenue").value);
+  let response = parseFloat(document.getElementById("response").value);
+  let followup = parseFloat(document.getElementById("followup").value);
+  let booking = parseFloat(document.getElementById("booking").value);
+  let revenueValue = document.getElementById("revenue").value;
+  let revenue = revenueValue.includes('+') ? parseInt(revenueValue) : parseInt(revenueValue) || 0;
 
-  const totalHoursPerWeek = response + followup + booking;
-  if (totalHoursPerWeek <= 0) {
-    alert("Please enter valid time for at least one task");
-    return;
-  }
+  const totalHours = response + followup + booking;
+  if (totalHours <= 0) { alert("Please select your task times"); return; }
 
-  // Realistic range: 20–40%
+  // Realistic savings: 20–40%
   const lowPercent = 0.2, highPercent = 0.4;
-  const savedLow = totalHoursPerWeek * lowPercent * 4; // per month
-  const savedHigh = totalHoursPerWeek * highPercent * 4; // per month
-  const savedDaysLow = savedLow / 8;
+  const savedLow = totalHours * lowPercent * 4;
+  const savedHigh = totalHours * highPercent * 4;
   const savedDaysHigh = savedHigh / 8;
 
-  // Animate hours
   animateValue("hours", 0, Math.round(savedHigh));
   document.getElementById("days").innerText = Math.round(savedDaysHigh);
 
-  // Conditional microcopy
-  const micro1 = document.getElementById("microcopy1");
-  if (totalHoursPerWeek < 5) {
-    micro1.innerText = `Even small automations can free up ${Math.round(savedLow)}–${Math.round(savedHigh)} hours per month.`;
-  } else {
-    micro1.innerText = `Imagine reclaiming ${Math.round(savedLow)}–${Math.round(savedHigh)} hours per month with automations.`;
-  }
-  micro1.style.display = "block";
-  document.getElementById("microcopy2").style.display = "block";
-  document.getElementById("microcopy3").style.display = "block";
-
-  // Revenue impact
-  if (revenue && revenue > 0) {
-    const potentialLow = (revenue * lowPercent * 4).toFixed(0);
-    const potentialHigh = (revenue * highPercent * 4).toFixed(0);
+  if (revenue > 0) {
+    const potentialLow = Math.round(revenue * lowPercent * 4);
+    const potentialHigh = Math.round(revenue * highPercent * 4);
     document.getElementById("money").innerText = `${potentialLow}–${potentialHigh}`;
     document.getElementById("moneyRow").style.display = "block";
     document.getElementById("moneyBadge").style.display = "inline-block";
